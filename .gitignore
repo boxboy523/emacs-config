@@ -1,0 +1,11 @@
+.cache/
+auto-save-list/
+backups/
+eln-cache/
+persp-confs/
+request/
+straight/
+transient/
+*.eld
+#history#
+history
