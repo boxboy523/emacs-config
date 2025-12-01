@@ -5,6 +5,7 @@
   ;;(with-eval-after-load 'winum
   ;;  (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
   :config
+  (treemacs-project-follow-mode 1)
   (progn
     (setq treemacs-buffer-name-function            #'treemacs-default-buffer-name
           treemacs-buffer-name-prefix              " *Treemacs-Buffer-"
@@ -101,11 +102,6 @@
   :straight t
   :after (treemacs magit))
 
-(use-package treemacs-persp ;;treemacs-perspective if you use perspective.el vs. persp-mode
-  :straight t
-  :after (treemacs persp-mode) ;;or perspective vs. persp-mode
-  :config (treemacs-set-scope-type 'Perspectives))
-
-;;(treemacs-start-on-boot)
+(treemacs-start-on-boot)
 
 (provide 'treemacs-config)

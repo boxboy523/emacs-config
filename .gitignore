@@ -6,6 +6,9 @@ persp-confs/
 request/
 straight/
 transient/
+snippets/
 *.eld
 #history#
 history
+tramp
+.lsp-session-v1

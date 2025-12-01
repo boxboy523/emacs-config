@@ -28,6 +28,11 @@
 ;; use-package 로드
 (straight-use-package 'use-package)
 
+(use-package exec-path-from-shell
+  :straight t
+  :init
+  (exec-path-from-shell-initialize))
+
 (use-package el-patch
   :straight t)
 
@@ -40,6 +45,8 @@
   ;; (vertico-resize t) ;; Grow and shrink the Vertico minibuffer
   (vertico-cycle t) ;; Enable cycling for `vertico-next/previous'
   (vertico-mode))
+
+(tab-bar-mode 1)
 
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
 (use-package savehist
@@ -73,22 +80,6 @@
   (completion-category-overrides '((file (styles partial-completion))))
   (completion-category-defaults nil) ;; Disable defaults, use our settings
   (completion-pcm-leading-wildcard t)) ;; Emacs 31: partial-completion behaves like substring
-
-;;(use-package persp-mode
-;;  :straight t
-;;  :init
-;;  (persp-mode 1)
-;;  :config
-;;  (setq	persp-auto-save-buffer nil
-;;	persp-save-state-on-exit nil)
-;;  :bind
-;;  (:map global-map
-;;        ("C-x p c" . persp-set-name)      ; 현재 관점 이름 설정/변경
-;;        ("C-x p s" . persp-switch-by-name) ; 이름으로 관점 전환 (Vertico 인터페이스 사용)
-;;        ("C-x p n" . persp-next)          ; 다음 관점으로 전환
-;;        ("C-x p p" . persp-prev)          ; 이전 관점으로 전환
-;;        ("C-x p k" . persp-kill)          ; 현재 관점 제거
-;;        ))
 
 (use-package winum
   :straight t
@@ -139,6 +130,7 @@
 (load (expand-file-name "consult-config.el" (file-name-directory load-file-name)))
 (load (expand-file-name "treemacs-config.el" (file-name-directory load-file-name)))
 (load (expand-file-name "my-keys.el" (file-name-directory load-file-name)))
+(load (expand-file-name "lsp-and-highlight.el" (file-name-directory load-file-name)))
 
 (use-package projectile
   :straight t
