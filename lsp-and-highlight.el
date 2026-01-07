@@ -69,12 +69,12 @@
   :straight t
   :after lsp-mode
   :custom
-  (lsp-ui-doc-enable t)
-  (lsp-ui-doc-header t)
-  (lsp-ui-doc-delay 0.2)
   (lsp-ui-sideline-enable t)
   (lsp-ui-sideline-show-code-actions t)
-  :commands lsp-ui-mode)
+  (lsp-ui-sideline-show-hover t)
+  :custom-face
+  (lsp-ui-sideline-global ((t (:background "gray10" :slant italic))))
+   :commands lsp-ui-mode)
 
 ;; optional: lsp-treemacs (symbols / errors view)
 (use-package lsp-treemacs
@@ -107,11 +107,28 @@
 (use-package haskell-mode
   :straight t)
 
+(use-package rust-mode
+  :straight t)
+(add-hook 'rust-mode-hook
+          (lambda () (setq indent-tabs-mode nil)))
+(setq rust-format-on-save t)
+(add-hook 'rust-mode-hook
+          (lambda () (prettify-symbols-mode)))
+(add-hook 'rust-mode-hook #'lsp)
+(use-package cargo
+  :straight t)
+(add-hook 'rust-mode-hook 'cargo-minor-mode)
+;; 1. 중요: 타입 정보와 에러 메시지를 모두 다 보여주도록 설정
+(setq lsp-eldoc-render-all t)
+(setq lsp-eldoc-enable-hover nil)
+(use-package rustic
+  :straight t)
+;; 2. 미니버퍼가 내용이 길면 자동으로 늘어나게 설정 (한 줄만 보이면 잘림)
+(setq eldoc-echo-area-use-multiline-p t)
 (use-package geiser
   :straight t
   :hook (scheme-mode . geiser-mode))
 
 (use-package geiser-chez
   :straight t)
-
 (provide 'lsp-and-highlight)

@@ -6,9 +6,11 @@ persp-confs/
 request/
 straight/
 transient/
+dirvish/
 snippets/
 *.eld
 #history#
 history
+projects
 tramp
 .lsp-session-v1

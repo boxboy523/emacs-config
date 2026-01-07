@@ -3,6 +3,12 @@
 (global-set-key (kbd "C-x c") 'copy-region-as-kill)
 (global-set-key (kbd "C-x v") 'yank)
 
+(global-set-key (kbd "C-S-x") 'kill-region)
+(global-set-key (kbd "C-S-c") 'copy-region-as-kill)
+(global-set-key (kbd "C-S-v") 'yank)
+
+(global-set-key (kbd "C-x C-z") 'delete-frame)
+
 ;;windmove
 (when (fboundp 'windmove-default-keybindings)
   (windmove-default-keybindings))
@@ -35,6 +41,7 @@
 
 ;; 번호(1-9)로 바로 이동: C-t 1 ... C-t 9
 ;; tab-bar-select-tab은 1-based 인덱스를 사용. 클로저로 각각 바인딩.
+
 (dotimes (i 9)
   (let ((n (1+ i)))
     (define-key my-tab-control-map (kbd (number-to-string n))
@@ -49,5 +56,7 @@
     "C-t t" "new tab"
     "C-t d" "close tab"
     "C-t r" "rename tab"))
+
+(global-set-key (kbd "<backspace>") 'backward-delete-char-untabify)
 
 (provide 'my-keys)
