@@ -102,6 +102,13 @@
   :straight t
   :after (treemacs magit))
 
-(treemacs-start-on-boot)
+;; (treemacs-start-on-boot)
+(defun my-treemacs-setup ()
+  (save-selected-window
+    (treemacs-select-window)))
+
+(if (daemonp)
+    (add-hook 'server-after-make-frame-hook #'my-treemacs-setup)
+  (add-hook 'after-init-hook #'my-treemacs-setup))
 
 (provide 'treemacs-config)

@@ -123,11 +123,6 @@
 (setq lsp-eldoc-enable-hover nil)
 (use-package rustic
   :straight t)
-
-(use-package nix-mode
-  :straight t
-  :mode "\\.nix\\'")
-
 ;; 2. 미니버퍼가 내용이 길면 자동으로 늘어나게 설정 (한 줄만 보이면 잘림)
 (setq eldoc-echo-area-use-multiline-p t)
 (use-package geiser

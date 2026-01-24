@@ -26,36 +26,51 @@
 (global-set-key (kbd "C-w d") 'delete-window)      ; C-x w d: 현재 창 닫기 (D for Delete)
 (global-set-key (kbd "C-w f") 'delete-other-windows) ; C-x w f: 현재 창 최대화 (F for Full/Focus)
 
-(define-prefix-command 'my-tab-control-map)
+(global-set-key (kbd "M-<up>") 'scroll-down-command)
+(global-set-key (kbd "M-<down>") 'scroll-up-command)
 
-(global-set-key (kbd "C-t") 'my-tab-control-map)
+(global-set-key (kbd "M-<left>") 'move-beginning-of-line)
+(global-set-key (kbd "M-<right>") 'move-end-of-line)
 
-(define-key my-tab-control-map (kbd "t") #'tab-bar-new-tab)
-;; 탭 닫기
-(define-key my-tab-control-map (kbd "d") #'tab-bar-close-tab)
-;; 탭 이름 변경
-(define-key my-tab-control-map (kbd "r") #'tab-bar-rename-tab)
-;; 다음 / 이전 탭
-(define-key my-tab-control-map (kbd "<right>") #'tab-bar-switch-to-next-tab)
-(define-key my-tab-control-map (kbd "<left>")  #'tab-bar-switch-to-prev-tab)
+;; -----------------------------------------------------------
+;; C-x + 숫자 : Tab Line 탭 전환 (기존 창 관리 키 덮어씀)
+;; -----------------------------------------------------------
 
-;; 번호(1-9)로 바로 이동: C-t 1 ... C-t 9
-;; tab-bar-select-tab은 1-based 인덱스를 사용. 클로저로 각각 바인딩.
+;; 1. N번째 탭으로 이동하는 함수 (이전과 동일)
+(defun my-tab-line-switch-to-tab (n)
+  "Tab Line에 보이는 목록 중 n번째 탭으로 이동합니다."
+  (interactive "p")
+  (let ((tabs (funcall tab-line-tabs-function)))
+    (if (and tabs (< (1- n) (length tabs)))
+        (switch-to-buffer (nth (1- n) tabs))
+      (message "탭 %d번은 없습니다." n))))
 
-(dotimes (i 9)
-  (let ((n (1+ i)))
-    (define-key my-tab-control-map (kbd (number-to-string n))
-      `(lambda ()
-         (interactive)
-         (tab-bar-select-tab ,n)))))
+;; 2. C-x 1 ~ C-x 9 키 바인딩 설정
+(mapc (lambda (n)
+        (global-set-key (kbd (format "C-x %d" n))
+                        ;; 람다로 숫자 n을 고정(capture)해서 바인딩
+                        `(lambda () (interactive) (my-tab-line-switch-to-tab ,n))))
+      (number-sequence 1 9))
 
-;; (선택) which-key가 있으면 프리픽스 도움을 보기 쉽게 함
-(when (featurep 'which-key)
-  (which-key-add-key-based-replacements
-    "C-t" "tabs"
-    "C-t t" "new tab"
-    "C-t d" "close tab"
-    "C-t r" "rename tab"))
+;; 3. (선택) C-x 0 : 현재 탭(버퍼) 닫기
+;; 원래 C-x 0 (delete-window) 자리에 '현재 버퍼 닫기'를 넣으면 직관적입니다.
+(global-set-key (kbd "C-x 0") 'kill-current-buffer)
+
+;; -----------------------------------------------------------
+;; 저장 없이 삭제하기 (Blackhole Delete)
+;; -----------------------------------------------------------
+
+(defun my-delete-line-or-region ()
+  "선택 영역이 있으면 영역 삭제, 없으면 현재 줄 전체 삭제 (Kill Ring 저장 X)"
+  (interactive)
+  (if (use-region-p)
+      ;; 1. 선택 영역이 있으면 -> 영역만 'Delete'
+      (delete-region (region-beginning) (region-end))
+    ;; 2. 선택 영역이 없으면 -> 현재 줄 전체 'Delete'
+    (delete-region (line-beginning-position) (line-beginning-position 2))))
+
+;; 단축키 설정 (원하는 키로 바꾸셔도 됩니다)
+(global-set-key (kbd "M-d") 'my-delete-line-or-region)
 
 (global-set-key (kbd "<backspace>") 'backward-delete-char-untabify)
 

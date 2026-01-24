@@ -15,8 +15,6 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-(setq create-lockfiles nil)
-
 (setq backup-directory-alist
       ;; 모든 백업 파일을 ~/.emacs.d/backups/ 디렉토리로 이동시킵니다.
       `((".*" . ,(concat user-emacs-directory "backups"))))
@@ -61,17 +59,7 @@
 
 ;; Korean
 (setq default-input-method "korean-hangul")
-
-;; -----------------------------------------------------------
-;; 성능 튜닝: 가비지 컬렉션(GC) 빈도 줄이기
-;; -----------------------------------------------------------
-
-;; 1. GC 임계값을 100MB로 대폭 상향 (기본값: 800KB)
-;;    -> 평소에는 메모리를 넉넉하게 쓰다가, 100MB 찰 때만 청소함.
-(setq gc-cons-threshold (* 200 1024 1024))
-
-;; 2. 프로세스 통신(LSP 등)에서 읽어오는 데이터 양 늘리기
-(setq read-process-output-max (* 1024 1024)) ;; 1MB
+(global-set-key (kbd "<Hangul>") 'toggle-input-method)
 
 ;; use-package 로드
 (straight-use-package 'use-package)
@@ -101,7 +89,7 @@
 
   ;; 2. 한글 폰트 설정 (따로 지정해야 안 깨짐)
   ;; 'hangul 스크립트에 대해서만 둥근모 Neo를 씁니다.
-  (set-fontset-font t 'hangul (font-spec :name "Monoplex KR"
+  (set-fontset-font t 'hangul (font-spec :name "NeoDunggeunmo Code"
                                          :size 15.0
                                      	 :antialias nil))
 

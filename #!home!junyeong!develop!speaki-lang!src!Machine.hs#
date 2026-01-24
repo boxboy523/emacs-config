@@ -1,0 +1,61 @@
+module Machine (run, emptyTape) where
+
+import Parser (Instruction(..))
+import Data.Char (chr)
+
+data Tape a =
+  Tape {
+    left :: [a],
+    pointing :: a,
+    right :: [a]
+  } deriving (Show)
+
+debugTape :: Tape Int -> String
+debugTape (Tape l p r) =
+  let leftSide = unwords $ map show $ reverse $ take 5 l
+      rightSide = unwords $ map show $ reverse $ take 5 r
+  in "..." ++ leftSide ++ " [" ++ show p ++ "] " ++ rightSide ++ "..."
+  
+emptyTape :: Tape Int
+emptyTape = Tape (repeat 0) 0 (repeat 0)
+
+moveRight :: Tape a -> Tape a
+moveRight (Tape ls p (r:rs)) = Tape (p:ls) r rs 
+moveRight _ = error "Tape Error: Tape reached right end"
+
+moveLeft :: Tape a -> Tape a
+moveLeft (Tape (l:ls) p rs) = Tape ls l (p:rs)
+moveLeft _ = error "Tape Error: Tape reached left end"
+
+moveInt :: Int -> Tape a -> Tape a
+moveInt n tape = case compare n 0 of
+  GT -> moveInt (n-1) (moveRight tape)
+  EQ -> tape
+  LT -> moveInt (n+1) (moveLeft tape)
+
+modifyValue :: (Int -> Int) -> Tape Int -> Tape Int
+modifyValue f (Tape l p r) = Tape l (f p) r
+
+run :: [Instruction] -> Tape Int -> IO (Tape Int)
+run [] tape = return tape
+run cmds@(inst:rest) tape@(Tape l _ r) = case inst of
+  Add n -> run rest (modifyValue (+ n) tape)
+  Move n -> run rest (moveInt n tape)
+  Print -> putChar (chr(pointing tape)) >> run rest tape
+  Loop insts
+    | pointing tape == 0 -> run rest tape
+    | otherwise -> do
+        newtape <- run insts tape
+        run cmds newtape
+  Once insts
+    | pointing tape == 0 -> run rest tape
+    | otherwise -> do
+        newtape <- run insts tape
+        run rest newtape
+  Halt -> return tape
+  Input -> do
+    inputStr <- getLine
+    let newVal = read inputStr :: Int
+    run rest (Tape l newVal r)
+  
+    

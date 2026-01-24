@@ -1,0 +1,49 @@
+use crate::{data::Prob, health::WoundType};
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AmmoType {
+    Arrow,
+    Bolt,
+    Bullet9mm,
+    EnergyCell,
+    Fuel
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct DamageData {
+    damage: f32,
+    d_type: WoundType,
+}
+
+#[derive(Debug, Clone)]
+pub struct MeleeWeaponData {
+    pub damage: Vec<DamageData>,
+    pub quality: Prob,
+    pub w_type: bool,
+    pub range: f32,
+}
+
+#[derive(Debug, Clone)]
+pub struct HitscanWeaponData {
+    pub quality: Prob,
+    pub recoil: f32,
+    pub w_type: bool,
+    pub range: f32,
+}
+
+#[derive(Debug, Clone)]
+pub struct ProjectileWeaponData {
+    pub damage: Vec<DamageData>,
+    pub inaccuracy: f32,
+    pub quality: Prob,
+    pub w_type: bool,
+    pub range: f32,
+}
+
+#[derive(Debug, Clone)]
+pub struct RangedWeaponData {
+    pub damage: Vec<DamageData>,
+    pub quality: Prob,
+    pub w_type: bool,
+    pub range: f32,
+}
