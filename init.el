@@ -1,5 +1,3 @@
-(setq user-emacs-directory (expand-file-name "~/.local/share/emacs/"))
-
 (when (boundp 'native-comp-eln-load-path)
   (setq native-comp-eln-load-path
         (list (expand-file-name "eln-cache/" user-emacs-directory))))
@@ -24,19 +22,6 @@
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
-
-(setq create-lockfiles nil)
-:
-(setq backup-directory-alist
-      ;; 모든 백업 파일을 ~/.emacs.d/backups/ 디렉토리로 이동시킵니다.
-      `((".*" . ,(concat user-emacs-directory "backups"))))
-
-(setq auto-save-file-name-transforms
-      ;; 자동 저장 파일도 동일 디렉토리로 이동시킵니다.
-      `((".*" ,(concat user-emacs-directory "backups") t)))
-
-(setq undo-tree-history-directory-alist
-      `((".*" ,(concat user-emacs-directory "undo"))))
 
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
