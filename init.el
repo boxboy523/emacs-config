@@ -90,15 +90,15 @@
   ;; :height 120 은 12pt 크기를 의미합니다. (10배수)
   (set-face-attribute 'default nil
                       :font (font-spec :family "Terminess Nerd Font Mono"
-                                       :size 14.0
+                                       :size 18.0
                                        :weight 'medium
-                                       :antialias nil))
+                                       :antialias t))
 
   ;; 2. 한글 폰트 설정 (따로 지정해야 안 깨짐)
   ;; 'hangul 스크립트에 대해서만 둥근모 Neo를 씁니다.
   (set-fontset-font t 'hangul (font-spec :name "Monoplex KR"
-                                         :size 15.0
-                                     	 :antialias nil))
+                                         :size 18.0
+                                     	 :antialias t))
 
   ;; 3. 특수문자/이모지 설정 (선택사항)
   ;; 폰트가 없어서 네모(□)로 나오는 문자를 잡아줍니다.
