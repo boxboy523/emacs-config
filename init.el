@@ -253,7 +253,12 @@
   :straight t
   :demand t
   :config
-  (envrc-global-mode))
+  (add-hook 'after-init-hook 'envrc-global-mode)
+  (add-hook 'envrc-mode-hook
+            (lambda ()
+              ;; 현재 버퍼가 rustic 모드일 때만 lsp를 실행
+              (when (derived-mode-p 'rustic-mode)
+                (lsp)))))
 
 (use-package magit
   :straight t

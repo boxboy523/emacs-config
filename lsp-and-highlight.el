@@ -56,6 +56,7 @@
   ;; 자동으로 프로젝트 루트 기반에서 LSP 시작
   (setq lsp-auto-guess-root t)
   (lsp-enable-which-key-integration t)
+  (setq lsp-rust-analyzer-server-command '("rust-analyzer"))
   ;; 편한 명령들 바인딩
   (define-key lsp-mode-map (kbd "C-c l r") #'lsp-rename)
   (define-key lsp-mode-map (kbd "C-c l a") #'lsp-execute-code-action)
@@ -122,7 +123,9 @@
 (setq lsp-eldoc-render-all t)
 (setq lsp-eldoc-enable-hover nil)
 (use-package rustic
-  :straight t)
+  :straight t
+  :config
+  (setq rustic-lsp-setup-p nil))
 
 (use-package nix-mode
   :straight t
