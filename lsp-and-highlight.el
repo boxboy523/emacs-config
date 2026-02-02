@@ -115,7 +115,7 @@
 (setq rust-format-on-save t)
 (add-hook 'rust-mode-hook
           (lambda () (prettify-symbols-mode)))
-(add-hook 'rust-mode-hook #'lsp)
+;; (add-hook 'rust-mode-hook #'lsp)
 (use-package cargo
   :straight t)
 (add-hook 'rust-mode-hook 'cargo-minor-mode)

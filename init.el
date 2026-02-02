@@ -253,7 +253,7 @@
   :straight t
   :demand t
   :config
-  (add-hook 'after-init-hook 'envrc-global-mode)
+  (envrc-global-mode)
   (add-hook 'envrc-mode-hook
             (lambda ()
               ;; 현재 버퍼가 rustic 모드일 때만 lsp를 실행
