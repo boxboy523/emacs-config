@@ -97,7 +97,6 @@
   ;; 2. 한글 폰트 설정 (따로 지정해야 안 깨짐)
   ;; 'hangul 스크립트에 대해서만 둥근모 Neo를 씁니다.
   (set-fontset-font t 'hangul (font-spec :name "Monoplex KR"
-                                         :size 14.0
                                      	 :antialias t))
 
   ;; 3. 특수문자/이모지 설정 (선택사항)
