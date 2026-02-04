@@ -266,10 +266,10 @@
          :map vterm-mode-map
          ("C-z" . vterm-toggle)))
 
+(load (expand-file-name "lsp-and-highlight.el" (file-name-directory load-file-name)))
 (load (expand-file-name "consult-config.el" (file-name-directory load-file-name)))
 (load (expand-file-name "treemacs-config.el" (file-name-directory load-file-name)))
 (load (expand-file-name "my-keys.el" (file-name-directory load-file-name)))
-(load (expand-file-name "lsp-and-highlight.el" (file-name-directory load-file-name)))
 (load (expand-file-name "nerd-icons.el" (file-name-directory load-file-name)))
 
 ;; -----------------------------------------------------------
@@ -278,8 +278,6 @@
 (use-package copilot
   :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el" "dist"))
   :hook (prog-mode . copilot-mode)
-  :bind (:map copilot-mode-map
-              ("<tab>" . copilot-accept-completion))
   :config
   (let ((server-file (expand-file-name "copilot/dist/agent.js" user-emacs-directory)))
     (unless (file-exists-p server-file)
