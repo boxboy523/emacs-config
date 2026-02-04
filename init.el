@@ -282,12 +282,10 @@
             (lambda ()
               ;; 현재 버퍼가 rustic 모드일 때만 lsp를 실행
               (when (derived-mode-p 'rustic-mode)
-                (lsp-deferred)
-                (flycheck-mode 1))
+                (lsp-deferred))
 
               (when (derived-mode-p 'haskell-mode)
-                (lsp-deferred)
-                (flycheck-mode 1))
+                (lsp-deferred))
 
               (when (derived-mode-p 'nix-mode)
                 (lsp-deferred)))))

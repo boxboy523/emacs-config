@@ -44,15 +44,12 @@
   :commands (lsp lsp-deferred lsp-enable-log)
   :init
   (setq lsp-completion-provider :capf)
-  ;; lsp 단축키 프리픽스 (원하면 변경)
   (setq lsp-keymap-prefix "C-c l")
-  ;; 성능 개선: LSP가 더 큰 응답을 읽을 수 있게 함
-  (setq read-process-output-max (* 1024 1024)) ; 1MB
-  (setq gc-cons-threshold (* 20 1024 1024))    ; 메모리 가비지 컬렉션 임계값(선택)
+  (setq read-process-output-max (* 1024 1024))
+  (setq gc-cons-threshold (* 20 1024 1024))
   :custom
   ;; completion backend로 completion-at-point을 사용하도록 설정 (corfu/cape 사용 가능)
-  ;; 기타 lsp 설정
-  (lsp-idle-delay 0.500)         ; 변경 감지 후 여유 시간
+  (lsp-idle-delay 0.500)
   (lsp-enable-symbol-highlighting t)
   (lsp-enable-snippet t)
   :config
@@ -60,7 +57,6 @@
   (setq lsp-auto-guess-root t)
   (lsp-enable-which-key-integration t)
   (setq lsp-rust-analyzer-server-command '("rust-analyzer"))
-  ;; 편한 명령들 바인딩
   (define-key lsp-mode-map (kbd "C-c l r") #'lsp-rename)
   (define-key lsp-mode-map (kbd "C-c l a") #'lsp-execute-code-action)
   (define-key lsp-mode-map (kbd "C-c l d") #'lsp-find-definition)
@@ -94,8 +90,7 @@
   :config
   ;; 많이 쓰는 cape 소스 등록(필요에 따라 순서 조정)
   (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  (add-to-list 'completion-at-point-functions #'cape-keyword))
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev))
 ;; 스니펫
 (use-package yasnippet
   :straight t
@@ -112,26 +107,21 @@
   :straight t)
 
 (use-package rust-mode
-  :straight t)
-(add-hook 'rust-mode-hook
-          (lambda () (setq indent-tabs-mode nil)))
+  :straight t
+  :mode "\\.rs\\'"
+  :config
+  (setq rust-format-on-save t))
 
 (setq rust-format-on-save t)
 (add-hook 'rust-mode-hook
           (lambda () (prettify-symbols-mode)))
 ;; (add-hook 'rust-mode-hook #'lsp)
 (use-package cargo
-  :straight t)
-(add-hook 'rust-mode-hook 'cargo-minor-mode)
+  :straight t
+  :hook (rust-mode . cargo-minor-mode))
 ;; 1. 중요: 타입 정보와 에러 메시지를 모두 다 보여주도록 설정
 (setq lsp-eldoc-render-all t)
 (setq lsp-eldoc-enable-hover nil)
-(use-package rustic
-  :straight t
-  :config
-  (setq rustic-lsp-setup-p nil)
-  (setq rustic-flycheck-setup-mode-line-p nil)
-  (setq rustic-format-on-save t))
 
 (use-package nix-mode
   :straight t
