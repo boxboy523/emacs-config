@@ -288,6 +288,12 @@
 (use-package copilot-chat
   :straight (:host github :repo "chep/copilot-chat.el" :files ("*.el")))
 
+(with-eval-after-load 'copilot
+  (define-key copilot-mode-map (kbd "<tab>") nil)
+  (define-key copilot-mode-map (kbd "TAB") nil)
+  (define-key copilot-mode-map (kbd "M-<tab>") 'copilot-accept-completion)
+  (define-key copilot-mode-map (kbd "M-TAB") 'copilot-accept-completion))
+
 ;; -----------------------------------------------------------
 ;; 환경 변수 및 LSP 실행 트리거 (가장 중요)
 ;; -----------------------------------------------------------
