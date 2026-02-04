@@ -272,28 +272,6 @@
 (load (expand-file-name "lsp-and-highlight.el" (file-name-directory load-file-name)))
 (load (expand-file-name "nerd-icons.el" (file-name-directory load-file-name)))
 
-(use-package envrc
-  :straight t
-  :demand t
-  :config
-  (envrc-global-mode)
-  (add-hook 'envrc-mode-hook
-            (lambda ()
-              ;; 현재 버퍼가 rustic 모드일 때만 lsp를 실행
-              (when (derived-mode-p 'rustic-mode)
-                (lsp-deferred))
-
-              (when (derived-mode-p 'haskell-mode)
-                (lsp-deferred))
-
-              (when (derived-mode-p 'nix-mode)
-                (lsp-deferred)))))
-
-(use-package projectile
-  :straight t
-  :init
-  (projectile-mode +1))
-
 ;; -----------------------------------------------------------
 ;; AI 코딩 보조 (Copilot) - use-package로 통일
 ;; -----------------------------------------------------------

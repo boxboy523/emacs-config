@@ -116,7 +116,7 @@
   (setq indent-tabs-mode nil)
   :config
   (setq rust-format-on-save t)
-  (preetify-symbols-mode 1))
+  (prettify-symbols-mode 1))
 
 (use-package cargo
   :straight t
