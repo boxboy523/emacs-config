@@ -148,8 +148,7 @@
   (setq dired-listing-switches
         "-l --almost-all --human-readable --group-directories-first --no-group")
   (dirvish-peek-mode) ; Preview files in minibuffer
-  (dirvish-side-follow-mode) ; similar to `treemacs-follow-mode'
-  )
+  (dirvish-side-follow-mode))
 ;;(tab-bar-mode 1)
 ;; -----------------------------------------------------------
 ;; 버퍼 탭 설정 (Tab Line)
@@ -295,28 +294,50 @@
   :init
   (projectile-mode +1))
 
-(straight-use-package 
- '(copilot :type git :host github :repo "copilot-emacs/copilot.el" :files ("*.el" "dist")))
+;; -----------------------------------------------------------
+;; AI 코딩 보조 (Copilot) - use-package로 통일
+;; -----------------------------------------------------------
+(use-package copilot
+  :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el" "dist"))
+  :hook (prog-mode . copilot-mode)
+  :bind (:map copilot-mode-map
+              ("<tab>" . copilot-accept-completion))
+  :config
+  (let ((server-file (expand-file-name "copilot/dist/agent.js" user-emacs-directory)))
+    (unless (file-exists-p server-file)
+      (message "Copilot server not found. Installing...")
+      (copilot-install-server)))
+  (message "Copilot loaded."))
 
-(eval-after-load 'copilot
-  '(progn
-     (add-hook 'prog-mode-hook 'copilot-mode)
-     (define-key copilot-mode-map (kbd "<tab>") #'copilot-accept-completion)
-     (message "Copilot loaded successfully (Manual Load).")))
+(use-package copilot-chat
+  :straight (:host github :repo "chep/copilot-chat.el" :files ("*.el")))
 
-(straight-use-package 
- '(copilot-chat :type git :host github :repo "chep/copilot-chat.el" :files ("*.el")))
+;; -----------------------------------------------------------
+;; 환경 변수 및 LSP 실행 트리거 (가장 중요)
+;; -----------------------------------------------------------
+(use-package envrc
+  :straight t
+  :demand t
+  :config
+  (envrc-global-mode)
+  
+  ;; [수정됨] rustic-mode 대신 rust-mode를 감지해야 합니다.
+  (add-hook 'envrc-mode-hook
+            (lambda ()
+              ;; Rust
+              (when (derived-mode-p 'rust-mode)
+                (lsp-deferred)
+                ;; (flycheck-mode 1) ;; LSP가 자동으로 켜므로 생략 가능
+                )
+              ;; Haskell
+              (when (derived-mode-p 'haskell-mode)
+                (lsp-deferred))
+              ;; Nix
+              (when (derived-mode-p 'nix-mode)
+                (lsp-deferred)))))
+
+;; Custom 파일 변수들 (자동 생성됨)
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
  '(package-vc-selected-packages
-   '((nerd-icons-mode-line :url
-                           "https://github.com/grolongo/nerd-icons-mode-line"))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+   '((nerd-icons-mode-line :url "https://github.com/grolongo/nerd-icons-mode-line"))))
+(custom-set-faces)
