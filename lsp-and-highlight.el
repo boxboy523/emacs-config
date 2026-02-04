@@ -33,6 +33,9 @@
   :straight t
   :hook (prog-mode . rainbow-delimiters-mode))
 
+(use-package flycheck
+  :straight t)
+
 (use-package lsp-haskell
   :straight t)
 
@@ -40,6 +43,7 @@
   :straight t
   :commands (lsp lsp-deferred lsp-enable-log)
   :init
+  (setq lsp-completion-provider :capf)
   ;; lsp 단축키 프리픽스 (원하면 변경)
   (setq lsp-keymap-prefix "C-c l")
   ;; 성능 개선: LSP가 더 큰 응답을 읽을 수 있게 함
@@ -47,7 +51,6 @@
   (setq gc-cons-threshold (* 20 1024 1024))    ; 메모리 가비지 컬렉션 임계값(선택)
   :custom
   ;; completion backend로 completion-at-point을 사용하도록 설정 (corfu/cape 사용 가능)
-  (lsp-completion-provider :capf)
   ;; 기타 lsp 설정
   (lsp-idle-delay 0.500)         ; 변경 감지 후 여유 시간
   (lsp-enable-symbol-highlighting t)
@@ -112,6 +115,7 @@
   :straight t)
 (add-hook 'rust-mode-hook
           (lambda () (setq indent-tabs-mode nil)))
+
 (setq rust-format-on-save t)
 (add-hook 'rust-mode-hook
           (lambda () (prettify-symbols-mode)))
@@ -125,7 +129,9 @@
 (use-package rustic
   :straight t
   :config
-  (setq rustic-lsp-setup-p nil))
+  (setq rustic-lsp-setup-p nil)
+  (setq rustic-flycheck-setup-mode-line-p nil)
+  (setq rustic-format-on-save t))
 
 (use-package nix-mode
   :straight t

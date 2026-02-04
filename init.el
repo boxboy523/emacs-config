@@ -2,6 +2,8 @@
   (setq native-comp-eln-load-path
         (list (expand-file-name "eln-cache/" user-emacs-directory))))
 
+(setq lsp-completion-provider :capf)
+
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file)
   (load custom-file))
@@ -248,17 +250,6 @@
 
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
-(use-package envrc
-  :straight t
-  :demand t
-  :config
-  (envrc-global-mode)
-  (add-hook 'envrc-mode-hook
-            (lambda ()
-              ;; 현재 버퍼가 rustic 모드일 때만 lsp를 실행
-              (when (derived-mode-p 'rustic-mode)
-                (lsp)))))
-
 (use-package magit
   :straight t
   :bind (("C-x g" . magit-status)))
@@ -282,23 +273,39 @@
 (load (expand-file-name "lsp-and-highlight.el" (file-name-directory load-file-name)))
 (load (expand-file-name "nerd-icons.el" (file-name-directory load-file-name)))
 
+(use-package envrc
+  :straight t
+  :demand t
+  :config
+  (envrc-global-mode)
+  (add-hook 'envrc-mode-hook
+            (lambda ()
+              ;; 현재 버퍼가 rustic 모드일 때만 lsp를 실행
+              (when (derived-mode-p 'rustic-mode)
+                (lsp-deferred)
+                (flycheck-mode 1))
+
+              (when (derived-mode-p 'haskell-mode)
+                (lsp-deferred)
+                (flycheck-mode 1))
+
+              (when (derived-mode-p 'nix-mode)
+                (lsp-deferred)))))
+
 (use-package projectile
   :straight t
   :init
   (projectile-mode +1))
 
-;; 1. Straight.el에게 Copilot을 설치/업데이트하도록 명령합니다.
 (straight-use-package 
  '(copilot :type git :host github :repo "copilot-emacs/copilot.el" :files ("*.el" "dist")))
 
-;; 2. Copilot이 성공적으로 설치된 후에만 로드하고 설정합니다.
 (eval-after-load 'copilot
   '(progn
      (add-hook 'prog-mode-hook 'copilot-mode)
      (define-key copilot-mode-map (kbd "<tab>") #'copilot-accept-completion)
      (message "Copilot loaded successfully (Manual Load).")))
 
-;; Copilot-chat도 동일하게 처리합니다.
 (straight-use-package 
  '(copilot-chat :type git :host github :repo "chep/copilot-chat.el" :files ("*.el")))
 (custom-set-variables
