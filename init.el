@@ -132,7 +132,7 @@
   (("C-x d" . dirvish)
    :map dirvish-mode-map
    ("M-p" . dirvish-peek-mode))
-  :after nerd-icons  
+  :after nerd-icons
   :config
   (setq dirvish-mode-line-format
         '(:left (sort symlink) :right (omit yank index)))
@@ -259,10 +259,13 @@
   :config
   (setq vterm-max-scrollback 10000))
 
+(use-package project
+  :straight t
+  :demand t)
+
 (use-package vterm-toggle
   :straight t
   :init
-  (require 'project)
   :bind (("C-z" . vterm-toggle)
          :map vterm-mode-map
          ("C-z" . vterm-toggle)))
@@ -286,7 +289,7 @@
         '((space-mark 32 [?•] [?.])        ;; 공백 → 점 (·)
           (newline-mark 10 [?↵ 10])           ;; 줄바꿈 → ↵
           (tab-mark 9 [?→ 9] [?^ 9])))       ;; 탭 → →
-  
+
   ;; 색상: ir-black 테마에 맞춘 어두운 회색
   (set-face-attribute 'whitespace-space nil
                       :background "inherit"
@@ -327,7 +330,7 @@
           (java-mode . 4)
           (go-mode . 4)
           (default . 4)))
-  
+
   (let ((server-file (expand-file-name "copilot/dist/agent.js" user-emacs-directory)))
     (unless (file-exists-p server-file)
       (message "Copilot server not found. Installing...")
@@ -341,7 +344,7 @@
          ("C-c c q" . copilot-chat-quick-question)
          :map copilot-chat-mode-map
          ("C-c c s" . copilot-chat-send)
-         ("C-c c c" . copilot-chat-quit))       
+         ("C-c c c" . copilot-chat-quit))
   :config
   (setq copilot-chat-mode-hook
         '(display-line-numbers-mode
@@ -352,7 +355,7 @@
   (define-key copilot-mode-map (kbd "TAB") nil)
   (define-key copilot-mode-map (kbd "C-<tab>") 'copilot-accept-completion)
   (define-key copilot-mode-map (kbd "C-TAB") 'copilot-accept-completion)
-  (define-key copilot-mode-map (kbd "s-n") 'copilot-next-completion)            
+  (define-key copilot-mode-map (kbd "s-n") 'copilot-next-completion)
   (define-key copilot-mode-map (kbd "s-p") 'copilot-previous-completion)
   (define-key copilot-mode-map (kbd "s-<right>") 'copilot-accept-completion-by-word)
   (define-key copilot-mode-map (kbd "s-<down>") 'copilot-accept-completion-by-line))
@@ -365,21 +368,14 @@
   :demand t
   :config
   (envrc-global-mode)
-  
-  ;; [수정됨] rustic-mode 대신 rust-mode를 감지해야 합니다.
   (add-hook 'envrc-mode-hook
-            (lambda ()
-              ;; Rust
-              (when (derived-mode-p 'rust-mode)
-                (lsp-deferred)
-                ;; (flycheck-mode 1) ;; LSP가 자동으로 켜므로 생략 가능
-                )
-              ;; Haskell
-              (when (derived-mode-p 'haskell-mode)
-                (lsp-deferred))
-              ;; Nix
-              (when (derived-mode-p 'nix-mode)
-                (lsp-deferred)))))
+          (lambda ()
+            ;; Rust, Haskell, Nix 등 direnv 환경이 로드된 후 Eglot 시작
+            (when (or (derived-mode-p 'rust-mode)
+                      (derived-mode-p 'haskell-mode)
+                      (derived-mode-p 'nix-mode)
+                      (derived-mode-p 'gdscript-mode)))
+              (eglot-ensure))))
 
 ;; Custom 파일 변수들 (자동 생성됨)
 (custom-set-variables
