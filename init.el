@@ -28,6 +28,7 @@
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
 (setq c-basic-offset 4)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; -----------------------------------------------------------
 ;; UI 요소 제거 (터미널 공간 확보)
@@ -266,6 +267,43 @@
          :map vterm-mode-map
          ("C-z" . vterm-toggle)))
 
+;; 공백 시각화
+(use-package whitespace
+  :straight t
+  :hook ((prog-mode . whitespace-mode)
+         (text-mode . whitespace-mode))
+  :config
+  ;; 표시 스타일
+  (setq whitespace-style '(face
+                           tabs
+                           tab-mark
+                           spaces
+                           space-mark
+                           trailing))
+  (setq whitespace-line-column nil)
+  ;; 공백 문자 표시 방식
+  (setq whitespace-display-mappings
+        '((space-mark 32 [?•] [?.])        ;; 공백 → 점 (·)
+          (newline-mark 10 [?↵ 10])           ;; 줄바꿈 → ↵
+          (tab-mark 9 [?→ 9] [?^ 9])))       ;; 탭 → →
+  
+  ;; 색상: ir-black 테마에 맞춘 어두운 회색
+  (set-face-attribute 'whitespace-space nil
+                      :background "inherit"
+                      :foreground "#222222"  ;; 어두운 회색
+                      :weight 'light)
+  (set-face-attribute 'whitespace-tab nil
+                      :background "inherit"
+                      :foreground "#222222"
+                      :weight 'light)
+  (set-face-attribute 'whitespace-trailing nil
+                      :background "#3a3a3a"  ;; 배경 강조
+                      :foreground "#888888"
+                      :weight 'bold)
+  (set-face-attribute 'whitespace-newline nil
+                      :foreground "#454545"
+                      :weight 'light))
+
 (load (expand-file-name "lsp-and-highlight.el" (file-name-directory load-file-name)))
 (load (expand-file-name "consult-config.el" (file-name-directory load-file-name)))
 (load (expand-file-name "treemacs-config.el" (file-name-directory load-file-name)))
@@ -279,6 +317,17 @@
   :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el" "dist"))
   :hook (prog-mode . copilot-mode)
   :config
+
+  (setq copilot-indent-offset-alist
+        '((python-mode . 4)
+          (javascript-mode . 2)
+          (typescript-mode . 2)
+          (rust-mode . 4)
+          (c-mode . 4)
+          (java-mode . 4)
+          (go-mode . 4)
+          (default . 4)))
+  
   (let ((server-file (expand-file-name "copilot/dist/agent.js" user-emacs-directory)))
     (unless (file-exists-p server-file)
       (message "Copilot server not found. Installing...")
@@ -286,13 +335,27 @@
   (message "Copilot loaded."))
 
 (use-package copilot-chat
-  :straight (:host github :repo "chep/copilot-chat.el" :files ("*.el")))
+  :straight (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
+  :after copilot
+  :bind (("C-c c c" . copilot-chat)
+         ("C-c c q" . copilot-chat-quick-question)
+         :map copilot-chat-mode-map
+         ("C-c c s" . copilot-chat-send)
+         ("C-c c c" . copilot-chat-quit))       
+  :config
+  (setq copilot-chat-mode-hook
+        '(display-line-numbers-mode
+          (lambda () (setq-local truncate-lines t)))))
 
 (with-eval-after-load 'copilot
   (define-key copilot-mode-map (kbd "<tab>") nil)
   (define-key copilot-mode-map (kbd "TAB") nil)
-  (define-key copilot-mode-map (kbd "M-<tab>") 'copilot-accept-completion)
-  (define-key copilot-mode-map (kbd "M-TAB") 'copilot-accept-completion))
+  (define-key copilot-mode-map (kbd "C-<tab>") 'copilot-accept-completion)
+  (define-key copilot-mode-map (kbd "C-TAB") 'copilot-accept-completion)
+  (define-key copilot-mode-map (kbd "s-n") 'copilot-next-completion)            
+  (define-key copilot-mode-map (kbd "s-p") 'copilot-previous-completion)
+  (define-key copilot-mode-map (kbd "s-<right>") 'copilot-accept-completion-by-word)
+  (define-key copilot-mode-map (kbd "s-<down>") 'copilot-accept-completion-by-line))
 
 ;; -----------------------------------------------------------
 ;; 환경 변수 및 LSP 실행 트리거 (가장 중요)
