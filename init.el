@@ -348,7 +348,8 @@
   :config
   (setq copilot-chat-mode-hook
         '(display-line-numbers-mode
-          (lambda () (setq-local truncate-lines t)))))
+          (lambda () (setq-local truncate-lines t))))
+  (add-to-list 'warning-suppress-types '(copilot copilot--infer-indentation-offset)))
 
 (with-eval-after-load 'copilot
   (define-key copilot-mode-map (kbd "<tab>") nil)
