@@ -28,7 +28,7 @@
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
 (setq c-basic-offset 4)
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
+(add-hook 'befonre-save-hook 'delete-trailing-whitespace)
 
 ;; -----------------------------------------------------------
 ;; UI 요소 제거 (터미널 공간 확보)
@@ -320,16 +320,11 @@
   :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el" "dist"))
   :hook (prog-mode . copilot-mode)
   :config
-
-  (setq copilot-indent-offset-alist
-        '((python-mode . 4)
-          (javascript-mode . 2)
-          (typescript-mode . 2)
-          (rust-mode . 4)
-          (c-mode . 4)
-          (java-mode . 4)
-          (go-mode . 4)
-          (default . 4)))
+  (add-to-list 'copilot-indentation-alist '(prog-mode 2))
+  (add-to-list 'copilot-indentation-alist '(org-mode 2))
+  (add-to-list 'copilot-indentation-alist '(text-mode 2))
+  (add-to-list 'copilot-indentation-alist '(closure-mode 2))
+  (add-to-list 'copilot-indentation-alist '(emacs-lisp-mode 2))
 
   (let ((server-file (expand-file-name "copilot/dist/agent.js" user-emacs-directory)))
     (unless (file-exists-p server-file)
@@ -340,16 +335,13 @@
 (use-package copilot-chat
   :straight (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
   :after copilot
-  :bind (("C-c c c" . copilot-chat)
-         ("C-c c q" . copilot-chat-quick-question)
-         :map copilot-chat-mode-map
-         ("C-c c s" . copilot-chat-send)
-         ("C-c c c" . copilot-chat-quit))
+  :bind (("C-c c" . copilot-chat-transient)  ;; 메인: Transient 메뉴
+         ("C-c C-o c" . copilot-chat-display)  ;; 빠른 열기
+         ("C-c C-o a" . copilot-chat-custom-mini-buffer))  ;; 빠른 질문 (("C-c c c" . copilot-chat)
   :config
   (setq copilot-chat-mode-hook
         '(display-line-numbers-mode
-          (lambda () (setq-local truncate-lines t))))
-  (add-to-list 'warning-suppress-types '(copilot copilot--infer-indentation-offset)))
+          (lambda () (setq-local truncate-lines t)))))
 
 (with-eval-after-load 'copilot
   (define-key copilot-mode-map (kbd "<tab>") nil)
@@ -375,8 +367,8 @@
             (when (or (derived-mode-p 'rust-mode)
                       (derived-mode-p 'haskell-mode)
                       (derived-mode-p 'nix-mode)
-                      (derived-mode-p 'gdscript-mode)))
-              (eglot-ensure))))
+                      (derived-mode-p 'gdscript-mode))
+              (eglot-ensure)))))
 
 ;; Custom 파일 변수들 (자동 생성됨)
 (custom-set-variables
