@@ -408,8 +408,13 @@
          ;; Dailies (일기/데일리 노트)
          ("C-c n j" . org-roam-dailies-capture-today))
   :config
-  ;; DB 자동 동기화 활성화
-  (org-roam-db-autosync-mode))
+  (org-roam-db-autosync-mode)
+  (setq org-roam-capture-templates
+        '(("d" "default" plain
+           "%?"
+           :if-new (file+head "${slug}.org"  ; 원래 있던 %<%Y%m%d%H%M%S>- 부분을 지웠습니다.
+                              "#+title: ${title}\n#+date: %U\n")
+           :unnarrowed t))))
 
 ;; ----------------------------------------------------------------------
 ;; 3. Org Super Agenda (아젠다 그룹화)
