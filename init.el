@@ -375,3 +375,69 @@
  '(package-vc-selected-packages
    '((nerd-icons-mode-line :url "https://github.com/grolongo/nerd-icons-mode-line"))))
 (custom-set-faces)
+
+;; ----------------------------------------------------------------------
+;; 1. Org Modern (디자인 개선)
+;; ----------------------------------------------------------------------
+(use-package org-modern
+  :straight t
+  :hook
+  ((org-mode . org-modern-mode)
+   (org-agenda-finalize . org-modern-agenda)) ; 아젠다에도 적용
+  :custom
+  (org-modern-star '("◉" "○" "◈" "◇" "★" "◆" "■" "□" "▲" "△")) ; 제목 아이콘 커스텀
+  (org-modern-hide-stars nil) ; 별(제목 표시) 숨김 여부
+  (org-modern-table-vertical 1) ; 표 세로선 표시
+  (org-modern-table-horizontal 0.2) ; 표 가로선 두께
+  :config
+  (global-org-modern-mode))
+
+;; ----------------------------------------------------------------------
+;; 2. Org Roam (제텔카스텐/지식 관리)
+;; ----------------------------------------------------------------------
+(use-package org-roam
+  :straight t
+  :custom
+  (org-roam-directory (file-truename "~/documents")) ; ★ 노트 저장 경로 (미리 폴더 생성 필요)
+  (org-roam-completion-everywhere t) ; 어디서든 링크 완성 기능 사용
+  :bind (("C-c n l" . org-roam-buffer-toggle) ; 백링크 버퍼 켜기/끄기
+         ("C-c n f" . org-roam-node-find)     ; 노트 찾기/생성
+         ("C-c n g" . org-roam-graph)         ; 그래프 보기
+         ("C-c n i" . org-roam-node-insert)   ; 현재 위치에 링크 삽입
+         ("C-c n c" . org-roam-capture)       ; 캡처(새 노트 작성)
+         ;; Dailies (일기/데일리 노트)
+         ("C-c n j" . org-roam-dailies-capture-today))
+  :config
+  ;; DB 자동 동기화 활성화
+  (org-roam-db-autosync-mode))
+
+;; ----------------------------------------------------------------------
+;; 3. Org Super Agenda (아젠다 그룹화)
+;; ----------------------------------------------------------------------
+(use-package org-super-agenda
+  :straight t
+  :after org-agenda
+  :config
+  (org-super-agenda-mode 1)
+  
+  ;; 예시: 기본 아젠다 뷰 설정 (사용자 취향에 맞춰 수정 가능)
+  (setq org-agenda-custom-commands
+        '(("z" "Super View"
+           ((agenda "" ((org-agenda-span 'day)
+                        (org-super-agenda-groups
+                         '((:name "Today"
+                                  :time-grid t
+                                  :date today
+                                  :todo "TODAY"
+                                  :scheduled today
+                                  :order 1)
+                           (:name "High Priority"
+                                  :priority "A"
+                                  :order 2)
+                           (:name "Due Soon"
+                                  :deadline future
+                                  :order 3)
+                           (:name "Waiting"
+                                  :todo "WAITING"
+                                  :order 9)
+                           (:discard (:anything t))))))))))) ; 나머지는 숨김 (테스트용)
