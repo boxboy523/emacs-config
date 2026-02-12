@@ -376,6 +376,7 @@
    '((nerd-icons-mode-line :url "https://github.com/grolongo/nerd-icons-mode-line"))))
 (custom-set-faces)
 
+(setq org-image-actual-width nil)
 ;; ----------------------------------------------------------------------
 ;; 1. Org Modern (디자인 개선)
 ;; ----------------------------------------------------------------------
