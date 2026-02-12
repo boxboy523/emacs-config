@@ -367,7 +367,8 @@
             (when (or (derived-mode-p 'rust-mode)
                       (derived-mode-p 'haskell-mode)
                       (derived-mode-p 'nix-mode)
-                      (derived-mode-p 'gdscript-mode))
+                      (derived-mode-p 'gdscript-mode)
+                      (derived-mode-p 'typescript-mode))
               (eglot-ensure)))))
 
 ;; Custom 파일 변수들 (자동 생성됨)
