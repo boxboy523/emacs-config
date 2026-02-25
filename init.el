@@ -400,7 +400,7 @@
 (use-package org-roam
   :straight t
   :custom
-  (org-roam-directory (file-truename "~/documents")) ; ★ 노트 저장 경로 (미리 폴더 생성 필요)
+  (org-roam-directory (file-truename "~/documents/org")) ; ★ 노트 저장 경로 (미리 폴더 생성 필요)
   (org-roam-completion-everywhere t) ; 어디서든 링크 완성 기능 사용
   :bind (("C-c n l" . org-roam-buffer-toggle) ; 백링크 버퍼 켜기/끄기
          ("C-c n f" . org-roam-node-find)     ; 노트 찾기/생성
