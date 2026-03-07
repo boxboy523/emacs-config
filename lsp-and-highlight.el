@@ -84,7 +84,8 @@
 ;; 4. 언어별 설정
 
 (use-package haskell-mode
-  :straight t)
+  :straight t
+  :hook (haskell-mode . turn-on-haskell-indentation))
 
 (use-package rust-mode
   :straight t
