@@ -85,7 +85,15 @@
 
 (use-package haskell-mode
   :straight t
-  :hook (haskell-mode . turn-on-haskell-indentation))
+  :mode "\\.hs\\'"
+  :hook (haskell-mode . (lambda ()
+                          (setq indent-tabs-mode nil)
+                          (setq tab-width 2)
+                          (haskell-indentation-mode t)))
+  :bind (:map haskell-mode-map
+              ("C-c C-c" . haskell-compile)
+              ("C-c C-l" . haskell-process-load-file)
+              ("C-c C-z" . haskell-interactive-switch)))
 
 (use-package rust-mode
   :straight t
