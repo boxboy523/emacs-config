@@ -332,16 +332,26 @@
       (copilot-install-server)))
   (message "Copilot loaded."))
 
-(use-package copilot-chat
-  :straight (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
-  :after copilot
-  :bind (("C-c c" . copilot-chat-transient)  ;; 메인: Transient 메뉴
-         ("C-c C-o c" . copilot-chat-display)  ;; 빠른 열기
-         ("C-c C-o a" . copilot-chat-custom-mini-buffer))  ;; 빠른 질문 (("C-c c c" . copilot-chat)
+;; (use-package copilot-chat
+;;  :straight (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
+;;  :after copilot
+;;  :bind (("C-c c" . copilot-chat-transient)  ;; 메인: Transient 메뉴
+;;         ("C-c C-o c" . copilot-chat-display)  ;; 빠른 열기
+;;         ("C-c C-o a" . copilot-chat-custom-mini-buffer))  ;; 빠른 질문 (("C-c c c" . copilot-chat)
+;;  :config
+;;  (setq copilot-chat-mode-hook
+;;        '(display-line-numbers-mode
+;;          (lambda () (setq-local truncate-lines t)))))
+
+(use-package popup :straight t)
+(use-package gemini-cli
+  :straight (:type git :host github :repo "linchen2chris/gemini-cli.el" :branch "main"
+                   :files ("*.el" (:exclude "demo.gif")))
+  :bind-keymap
+  ("C-c c" . gemini-cli-command-map)
   :config
-  (setq copilot-chat-mode-hook
-        '(display-line-numbers-mode
-          (lambda () (setq-local truncate-lines t)))))
+  (gemini-cli-mode)
+  (setq gemini-cli-terminal-backend 'vterm))
 
 (with-eval-after-load 'copilot
   (define-key copilot-mode-map (kbd "<tab>") nil)
