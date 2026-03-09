@@ -343,6 +343,16 @@
 ;;        '(display-line-numbers-mode
 ;;          (lambda () (setq-local truncate-lines t)))))
 
+(use-package eat
+  :straight (:type git
+                   :host codeberg
+                   :repo "akib/emacs-eat"
+                   :files ("*.el" ("term" "term/*.el") "*.texi"
+                           "*.ti" ("terminfo/e" "terminfo/e/*")
+                           ("terminfo/65" "terminfo/65/*")
+                           ("integration" "integration/*")
+                           (:exclude ".dir-locals.el" "*-tests.el"))))
+
 (use-package popup :straight t)
 (use-package gemini-cli
   :straight (:type git :host github :repo "linchen2chris/gemini-cli.el" :branch "main"
