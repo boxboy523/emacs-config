@@ -360,8 +360,7 @@
   :bind-keymap
   ("C-c c" . gemini-cli-command-map)
   :config
-  (gemini-cli-mode)
-  (setq gemini-cli-terminal-backend 'vterm))
+  (gemini-cli-mode))
 
 (with-eval-after-load 'copilot
   (define-key copilot-mode-map (kbd "<tab>") nil)
