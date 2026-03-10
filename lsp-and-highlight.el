@@ -56,7 +56,8 @@
          (haskell-mode . eglot-ensure)
          (nix-mode . eglot-ensure)
          (gdscript-mode . eglot-ensure)
-         (typescript-mode . eglot-ensure))
+         (typescript-mode . eglot-ensure)
+         (zig-mode . eglot-ensure))
   :bind (:map eglot-mode-map
               ("C-c l r" . eglot-rename)
               ("C-c l a" . eglot-code-actions)
@@ -115,6 +116,10 @@
 (use-package typescript-mode
   :straight t
   :mode "\\.ts\\'")
+
+(use-package zig-mode
+  :straight t
+  :mode "\\.zig\\'")
 
 (use-package gdscript-mode
     :straight (gdscript-mode
