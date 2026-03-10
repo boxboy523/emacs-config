@@ -2,6 +2,9 @@
   (setq native-comp-eln-load-path
         (list (expand-file-name "eln-cache/" user-emacs-directory))))
 
+;; [디버깅] TRAMP 상세 로그 비활성화 (정상화)
+(setq tramp-verbose 3)
+
 (setq lsp-completion-provider :capf)
 
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
@@ -28,7 +31,7 @@
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
 (setq c-basic-offset 4)
-(add-hook 'befonre-save-hook 'delete-trailing-whitespace)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; -----------------------------------------------------------
 ;; UI 요소 제거 (터미널 공간 확보)
@@ -82,8 +85,16 @@
 (use-package exec-path-from-shell
   :straight t
   :init
-  (exec-path-from-shell-initialize)
-)
+  (exec-path-from-shell-initialize))
+
+;; TRAMP 전역 설정 (NixOS 경로만 추가, 터미널 설정은 기본값 유지)
+(with-eval-after-load 'tramp
+  (add-to-list 'tramp-remote-path "/run/current-system/sw/bin")
+  (add-to-list 'tramp-remote-path "~/.nix-profile/bin")
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
+
+;; 원격 파일의 경우 Git 상태 확인을 부팅 시에 하지 않도록 설정 (Hanging 방지)
+(setq vc-ignore-dir-regexp tramp-file-name-regexp)
 
 ;; -----------------------------------------------------------
 ;; 폰트 설정
@@ -360,6 +371,20 @@
   :bind-keymap
   ("C-c c" . gemini-cli-command-map)
   :config
+  (defun my-gemini-set-sshfs-home ()
+    "Set GEMINI_HOME to the .gemini directory inside the 'sshfs' parent directory if it exists."
+    (let* ((dir (expand-file-name default-directory))
+           ;; 경로 중 'sshfs/' 가 포함된 부분까지 추출합니다.
+           (match (string-match "\\(.*/sshfs/\\)" dir)))
+      (if match
+          (let ((sshfs-root (match-string 1 dir)))
+            (setenv "GEMINI_HOME" (expand-file-name ".gemini/" sshfs-root))
+            (message "Gemini using sshfs-local storage: %s" (getenv "GEMINI_HOME")))
+        ;; sshfs 경로가 아니면 기본 홈 디렉토리 사용
+        (setenv "GEMINI_HOME" (expand-file-name "~/.gemini/")))))
+
+  ;; gemini-cli 명령이 실행될 때마다 환경 변수를 동적으로 확인합니다.
+  (advice-add 'gemini-cli--run :before #'my-gemini-set-sshfs-home)
   (gemini-cli-mode))
 
 (with-eval-after-load 'copilot
