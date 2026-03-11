@@ -35,7 +35,7 @@
          ("M-g i" . consult-imenu)
          ("M-g I" . consult-imenu-multi)
          ;; M-s bindings in `search-map'
-         ("M-s d" . consult-find)                  ;; Alternative: consult-fd
+         ("M-s f" . consult-find)                  ;; Alternative: consult-fd
          ("M-s c" . consult-locate)
          ("M-s g" . consult-grep)
          ("M-s G" . consult-git-grep)
@@ -101,6 +101,13 @@
   ;; Optionally make narrowing help available in the minibuffer.
   ;; You may want to use `embark-prefix-help-command' or which-key instead.
   ;; (keymap-set consult-narrow-map (concat consult-narrow-key " ?") #'consult-narrow-help)
-)
+  )
+
+(use-package consult-dash
+  :straight t
+  :bind (("M-s d" . consult-dash))
+  :config
+  (consult-customize consult-dash :initial (thing-at-point 'symbol))
+  (setq consult-dash-common-docsets '("Python" "Rust" "Haskell" "Zig" "TypeScript" "Nix")))
 
 (provide 'consult-config)

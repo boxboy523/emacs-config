@@ -67,9 +67,16 @@
 ;; 성능 튜닝: 가비지 컬렉션(GC) 빈도 줄이기
 ;; -----------------------------------------------------------
 
-;; 1. GC 임계값을 100MB로 대폭 상향 (기본값: 800KB)
-;;    -> 평소에는 메모리를 넉넉하게 쓰다가, 100MB 찰 때만 청소함.
-(setq gc-cons-threshold (* 200 1024 1024))
+(setq gc-cons-threshold (* 16 1024 1024)) ;; 기본값보다 높게 설정 (16MB → 128MB)
+
+(defun my-minibuffer-setup-hook ()
+  (setq gc-cons-threshold (* 128 1024 1024)))
+
+(defun my-minibuffer-exit-hook ()
+  (setq gc-cons-threshold (* 16 1024 1024)))
+
+(add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
+(add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
 
 ;; 2. 프로세스 통신(LSP 등)에서 읽어오는 데이터 양 늘리기
 (setq read-process-output-max (* 1024 1024)) ;; 1MB

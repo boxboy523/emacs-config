@@ -21,11 +21,6 @@
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
-(straight-use-package
- '(corfu-terminal
-   :type git
-   :repo "https://codeberg.org/akib/emacs-corfu-terminal.git"))
-
 (unless (display-graphic-p)
   (corfu-terminal-mode +1))
 
@@ -36,7 +31,6 @@
   ;; 많이 쓰는 cape 소스 등록(필요에 따라 순서 조정)
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-dabbrev))
-
 ;; 2. 문법 검사 및 하이라이팅
 
 (electric-pair-mode 1)
@@ -68,7 +62,14 @@
   (add-to-list 'eglot-server-programs
                '((gdscript-mode) . ("localhost" 6005)))
 
+  (setq display-buffer-alist
+      (append '(("*eldoc*"
+                 (display-buffer-reuse-window display-buffer-at-bottom)
+                 (window-parameters . ((no-other-window . t)))))
+              display-buffer-alist))
   ;; 성능 최적화: 이벤트 버퍼링
+  (setq eglot-send-changes-idle-time 0.1)
+  (setq jsonrpc-event-buffer-size 0)
   (fset #'jsonrpc--log-event #'ignore)
   (setq eglot-events-buffer-size 0)
   (setq eglot-sync-connect 0))

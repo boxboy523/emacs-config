@@ -32,6 +32,39 @@
 (global-set-key (kbd "M-<left>") 'move-beginning-of-line)
 (global-set-key (kbd "M-<right>") 'move-end-of-line)
 
+;; --- Eldoc 문서 토글 함수 추가 ---
+(defun my-eldoc-doc-toggle ()
+  "Eldoc 문서 버퍼가 있으면 닫고, 없으면 엽니다."
+  (interactive)
+  (let ((win (get-buffer-window "*eldoc*")))
+    (if win
+        (delete-window win)
+      (eldoc-doc-buffer))))
+
+;; --- 전역 폰트 크기 조절 함수 추가 ---
+(defun my-global-text-scale-increase ()
+  "전역 폰트 크기를 키웁니다."
+  (interactive)
+  (let ((old-face-attribute (face-attribute 'default :height)))
+    (set-face-attribute 'default nil :height (+ old-face-attribute 10))))
+
+(defun my-global-text-scale-decrease ()
+  "전역 폰트 크기를 줄입니다."
+  (interactive)
+  (let ((old-face-attribute (face-attribute 'default :height)))
+    (set-face-attribute 'default nil :height (- old-face-attribute 10))))
+
+;; --- 단축키 바인딩 변경 및 추가 ---
+;; 기존 C-= / C-- 는 버퍼 로컬 조절로 두고,
+;; C-M-= / C-M-- 를 전역 조절로 할당하거나 취향에 맞게 교체하세요.
+(global-set-key (kbd "C-+") 'my-global-text-scale-increase)
+(global-unset-key (kbd "C-_")) ; 기존 C-_ 단축키 제거
+(global-set-key (kbd "C-_") 'my-global-text-scale-decrease)
+
+;; Eldoc 토글 단축키 (LSP 프리픽스 C-c l 에 맞춤)
+(with-eval-after-load 'eglot
+  (define-key eglot-mode-map (kbd "C-c l h") #'my-eldoc-doc-toggle))
+
 ;; -----------------------------------------------------------
 ;; C-x + 숫자 : Tab Line 탭 전환 (기존 창 관리 키 덮어씀)
 ;; -----------------------------------------------------------

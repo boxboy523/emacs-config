@@ -2,8 +2,8 @@
   :straight t
   :defer t
   ;;:init
-  ;;(with-eval-after-load 'winum
-  ;;  (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+  (with-eval-after-load 'winum
+    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
   :config
   (treemacs-project-follow-mode 1)
   (progn
@@ -70,7 +70,7 @@
     (treemacs-follow-mode t)
     (treemacs-filewatch-mode t)
     (treemacs-fringe-indicator-mode 'always)
-    
+
     (setq treemacs-text-content-display-mode 'nerd-icons)
 
     (when treemacs-python-executable
