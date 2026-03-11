@@ -21,9 +21,6 @@
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
-(unless (display-graphic-p)
-  (corfu-terminal-mode +1))
-
 (use-package cape
   :straight t
   :after corfu
