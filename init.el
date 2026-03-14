@@ -269,8 +269,18 @@
   (setq vterm-max-scrollback 10000))
 
 (use-package project
-  :straight t
+  :straight (:type built-in)
   :demand t)
+
+(use-package projectile
+  :straight t
+  :init
+  (projectile-mode +1)
+  :bind (:map projectile-mode-map
+              ("C-c p" . projectile-command-map))
+  :config
+  (setq projectile-indexing-method 'hybrid)
+  (add-to-list 'projectile-globally-ignored-directories "node_modules"))
 
 (use-package vterm-toggle
   :straight t

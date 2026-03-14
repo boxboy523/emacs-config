@@ -96,7 +96,10 @@
 
 (use-package treemacs-projectile
   :straight t
-  :after (treemacs projectile))
+  :after (treemacs projectile)
+  :config
+  (setq treemacs-header-scroll-indicators '(nil . "^^^^^^"))
+  (treemacs-project-follow-mode 1))
 
 (use-package treemacs-magit
   :straight t
