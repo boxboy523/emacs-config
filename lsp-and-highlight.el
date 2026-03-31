@@ -48,7 +48,11 @@
          (nix-mode . eglot-ensure)
          (gdscript-mode . eglot-ensure)
          (typescript-mode . eglot-ensure)
-         (zig-mode . eglot-ensure))
+         (zig-mode . eglot-ensure)
+         (roc-ts-mode . eglot-ensure)
+         (python-mode . eglot-ensure)
+         (c-mode . eglot-ensure)
+         (c++-mode . eglot-ensure))
   :bind (:map eglot-mode-map
               ("C-c l r" . eglot-rename)
               ("C-c l a" . eglot-code-actions)
@@ -58,7 +62,12 @@
   ;; [중요] Godot 4 연결 설정: 실행하지 말고 localhost:6005로 접속만 해라
   (add-to-list 'eglot-server-programs
                '((gdscript-mode) . ("localhost" 6005)))
-
+  (add-to-list 'eglot-server-programs
+               '((python-mode) . ("pyright-langserver" "--stdio")))
+  (add-to-list 'eglot-server-programs
+               '((c-mode c++-mode) . ("clangd" "--header-insertion=never"
+                                      "--background-index"
+                                      "--log=error")))
   (setq display-buffer-alist
       (append '(("*eldoc*"
                  (display-buffer-reuse-window display-buffer-at-bottom)
@@ -118,6 +127,22 @@
 (use-package zig-mode
   :straight t
   :mode "\\.zig\\'")
+
+(use-package roc-ts-mode
+  :straight t
+  :mode ("\\.roc\\'" . roc-ts-mode)
+  :hook (roc-ts-mode . (lambda ()
+                        (setq indent-tabs-mode nil)
+                        (setq tab-width 2))))
+
+(with-eval-after-load 'roc-ts-mode
+  (require 'eglot)
+  (add-to-list 'eglot-server-programs '(roc-ts-mode "roc_language_server"))
+  (add-hook 'roc-ts-mode-hook #'eglot-ensure))
+
+(use-package python-mode
+  :straight t
+  :mode ("\\.py\\'" . python-mode))
 
 (use-package gdscript-mode
     :straight (gdscript-mode
