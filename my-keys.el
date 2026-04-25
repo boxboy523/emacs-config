@@ -111,4 +111,16 @@
 
 (global-set-key (kbd "C--") 'text-scale-decrease)
 
+(defun my-backward-delete-tab ()
+  "현재 줄의 시작 부분에서 tab-width만큼 공백을 삭제합니다."
+  (interactive)
+  (save-excursion
+    (beginning-of-line)
+    (if (looking-at (concat "^" (make-string tab-width ?\s)))
+        (delete-char tab-width)
+      (backward-delete-char-untabify 1))))
+
+;; Backtab(Shift-Tab)에 바인딩
+(global-set-key (kbd "<backtab>") 'my-backward-delete-tab)
+
 (provide 'my-keys)

@@ -29,8 +29,10 @@
   (load bootstrap-file nil 'nomessage))
 
 (setq-default indent-tabs-mode nil)
-(setq-default tab-width 4)
-(setq c-basic-offset 4)
+(setq-default tab-width 2)
+(setq c-basic-offset 2)
+(setq split-width-threshold 0)
+(setq split-height-threshold nil)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; -----------------------------------------------------------
@@ -94,6 +96,11 @@
   :init
   (exec-path-from-shell-initialize))
 
+(use-package transpose-frame
+  :straight t
+  :bind (("C-c t" . transpose-frame))
+  :config
+  (transpose-frame-mode 1))
 ;; -----------------------------------------------------------
 ;; 폰트 설정
 ;; -----------------------------------------------------------
@@ -118,6 +125,13 @@
 
 (add-hook 'server-after-make-frame-hook
           (lambda () (my-font-setup)))
+;; ansi on compilation buffer
+(require 'ansi-color)
+(defun my/ansi-color-compilation-filter ()
+  (let ((inhibit-read-only t))
+    (ansi-color-apply-on-region (point-min) (point-max))))
+
+(add-hook 'compilation-filter-hook 'my/ansi-color-compilation-filter)
 
 (use-package el-patch
   :straight t)
@@ -169,11 +183,15 @@
   :config
   ;; 1. 불필요한 버튼 숨기기
   (setq tab-line-new-button-show nil)      ;; '새 탭' (+) 버튼 숨김
-  (setq tab-line-close-tab-function 'kill-buffer) ;; 닫기 버튼 누르면 버퍼 kill
-  (setq tab-line-separator " "))            ;; 탭 사이 간격
+  (setq tab-line-close-tab-function 'bury-buffer) ;; 닫기 버튼 누르면 버퍼 kill
+  (setq tab-line-separator " ")
+  (setq tab-line-tabs-function #'tab-line-tabs-window-buffers))
 
 (use-package tab-line-nerd-icons
-  :straight t)
+  :straight t
+  :after tab-line
+  :config
+  (tab-line-nerd-icons-global-mode 1))
 
 (defun my-tab-line-setup ()
   (interactive)
@@ -268,18 +286,66 @@
   :config
   (setq vterm-max-scrollback 10000))
 
-(use-package project
-  :straight t
-  :demand t)
-
 (use-package vterm-toggle
   :straight t
   :init
   :bind (("C-z" . vterm-toggle)
          :map vterm-mode-map
-         ("C-z" . vterm-toggle)))
+         ("C-z" . vterm-toggle))
+  :config
+  (setq vterm-toggle-fullscreen-p nil)
+  (setq vterm-toggle-scope 'project)
 
-;; 공백 시각화
+  (add-hook 'vterm-toggle-mode-hook 'compilation-shell-minor-mode))
+
+(setq display-buffer-alist
+      (append
+       '(;; 1. vterm 버퍼 격리 (화면 하단 35% 점유, 다른 버퍼 침범 금지)
+         ("\\*vterm.*\\*"
+          (display-buffer-reuse-window display-buffer-in-side-window)
+          (side . bottom)
+          (window-height . 0.35)
+          (window-parameters . ((no-other-window . nil)
+                                (dedicated . t))))
+
+         ;; 2. compilation 버퍼 격리 (화면 하단, 포커스는 가져가지 않음)
+         ("\\*compilation\\*"
+          (display-buffer-reuse-window display-buffer-in-side-window)
+          (side . bottom)
+          (window-height . 0.3)
+          (window-parameters . ((no-other-window . nil)
+                                (dedicated . t)))))
+       display-buffer-alist))
+
+(defun my-compile-in-vterm (orig-fun &rest args)
+  (let ((command (if (and args (stringp (car args)))
+                     (car args)
+                   (eval compile-command))))
+    (vterm-toggle-send-string command t)))
+
+(advice-add 'compile :around #'my-compile-in-vterm)
+(advice-add 'recompile :around #'my-compile-in-vterm)
+
+;; vterm-toggle 사용 시 side window 설정을 따르도록 강제
+
+(use-package project
+  :straight (:type built-in)
+  :demand t)
+
+(use-package projectile
+  :straight t
+  :init
+  (projectile-mode +1)
+  :bind (:map projectile-mode-map
+              ("C-c p" . projectile-command-map))
+  :config
+  (setq projectile-indexing-method 'hybrid)
+  (add-to-list 'projectile-globally-ignored-directories "node_modules"))
+
+;; 기본 compile 함수에 어드바이스를 걸어 vterm을 사용하게 합니다.
+(advice-add 'compile :around #'my-compile-in-vterm)
+(advice-add 'recompile :around #'my-compile-in-vterm)
+
 (use-package whitespace
   :straight t
   :hook ((prog-mode . whitespace-mode)
@@ -316,6 +382,14 @@
                       :foreground "#454545"
                       :weight 'light))
 
+(use-package dape
+  :straight t
+  :config
+  (setq dape-buffer-window-arrangement 'gdb))
+
+(use-package impatient-mode
+  :straight t)
+
 (load (expand-file-name "lsp-and-highlight.el" (file-name-directory load-file-name)))
 (load (expand-file-name "consult-config.el" (file-name-directory load-file-name)))
 (load (expand-file-name "treemacs-config.el" (file-name-directory load-file-name)))
@@ -341,16 +415,46 @@
       (copilot-install-server)))
   (message "Copilot loaded."))
 
-;; (use-package copilot-chat
-;;  :straight (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
-;;  :after copilot
-;;  :bind (("C-c c" . copilot-chat-transient)  ;; 메인: Transient 메뉴
-;;         ("C-c C-o c" . copilot-chat-display)  ;; 빠른 열기
-;;         ("C-c C-o a" . copilot-chat-custom-mini-buffer))  ;; 빠른 질문 (("C-c c c" . copilot-chat)
-;;  :config
-;;  (setq copilot-chat-mode-hook
-;;        '(display-line-numbers-mode
-;;          (lambda () (setq-local truncate-lines t)))))
+(with-eval-after-load 'copilot
+  (define-key copilot-mode-map (kbd "<tab>") nil)
+  (define-key copilot-mode-map (kbd "TAB") nil)
+  (define-key copilot-mode-map (kbd "C-<tab>") 'copilot-accept-completion)
+  (define-key copilot-mode-map (kbd "C-TAB") 'copilot-accept-completion)
+  (define-key copilot-mode-map (kbd "s-n") 'copilot-next-completion)
+  (define-key copilot-mode-map (kbd "s-p") 'copilot-previous-completion)
+  (define-key copilot-mode-map (kbd "s-<right>") 'copilot-accept-completion-by-word)
+  (define-key copilot-mode-map (kbd "s-<down>") 'copilot-accept-completion-by-line))
+
+(use-package mcp
+  :straight t
+  :custom (mcp-hub-servers
+           `(("filesystem" . (:command "npx"
+                              :args ("-y" "@modelcontextprotocol/server-filesystem")
+                              :roots ("~/develop")))
+             ("fetch" . (:command "uvx" :args ("mcp-server-fetch")))
+             ("qdrant" . (:url "http://localhost:8000/sse"))
+                    ("firecrawl" . (
+                             :command "npx"
+                             :args ("-y" "firecrawl-mcp")
+                             :env (
+                                   :FIRECRAWL_API_KEY "fc-bfab0fc25e704c648624164a9bcb855b")))))
+  :config (require 'mcp-hub)
+  :hook (after-init . mcp-hub-start-all-server))
+
+
+(use-package copilot-chat
+  :straight (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
+  :after copilot
+  :bind (("C-c c" . copilot-chat-transient)  ;; 메인: Transient 메뉴
+         ("C-c C-o c" . copilot-chat-display)  ;; 빠른 열기
+         ("C-c C-o a" . copilot-chat-custom-mini-buffer))  ;; 빠른 질문 (("C-c c c" . copilot-chat)
+  :custom
+  (copilot-chat-use-tools t)
+  :config
+  (setq copilot-chat-mode-hook
+        '(display-line-numbers-mode
+          (lambda () (setq-local truncate-lines t))))
+  (setq copilot-chat-default-model "claude-haiku-4.5"))
 
 (use-package eat
   :straight (:type git
@@ -363,23 +467,6 @@
                            (:exclude ".dir-locals.el" "*-tests.el"))))
 
 (use-package popup :straight t)
-(use-package gemini-cli
-  :straight (:type git :host github :repo "linchen2chris/gemini-cli.el" :branch "main"
-                   :files ("*.el" (:exclude "demo.gif")))
-  :bind-keymap
-  ("C-c c" . gemini-cli-command-map)
-  :config
-  (gemini-cli-mode))
-
-(with-eval-after-load 'copilot
-  (define-key copilot-mode-map (kbd "<tab>") nil)
-  (define-key copilot-mode-map (kbd "TAB") nil)
-  (define-key copilot-mode-map (kbd "C-<tab>") 'copilot-accept-completion)
-  (define-key copilot-mode-map (kbd "C-TAB") 'copilot-accept-completion)
-  (define-key copilot-mode-map (kbd "s-n") 'copilot-next-completion)
-  (define-key copilot-mode-map (kbd "s-p") 'copilot-previous-completion)
-  (define-key copilot-mode-map (kbd "s-<right>") 'copilot-accept-completion-by-word)
-  (define-key copilot-mode-map (kbd "s-<down>") 'copilot-accept-completion-by-line))
 
 ;; -----------------------------------------------------------
 ;; 환경 변수 및 LSP 실행 트리거 (가장 중요)
