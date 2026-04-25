@@ -432,12 +432,7 @@
                               :args ("-y" "@modelcontextprotocol/server-filesystem")
                               :roots ("~/develop")))
              ("fetch" . (:command "uvx" :args ("mcp-server-fetch")))
-             ("qdrant" . (:url "http://localhost:8000/sse"))
-                    ("firecrawl" . (
-                             :command "npx"
-                             :args ("-y" "firecrawl-mcp")
-                             :env (
-                                   :FIRECRAWL_API_KEY "fc-bfab0fc25e704c648624164a9bcb855b")))))
+             ("qdrant" . (:url "http://localhost:8000/sse"))))
   :config (require 'mcp-hub)
   :hook (after-init . mcp-hub-start-all-server))
 

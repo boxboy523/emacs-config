@@ -126,17 +126,12 @@
 
 (use-package zig-mode
   :straight t
-  :mode "\\.zig\\'"
-  :hook (zig-mode . (lambda ()
-                     (setq indent-tabs-mode nil)
-                     (setq tab-width 2))))
+  :mode "\\.zig\\'")
 
 (use-package roc-ts-mode
   :straight t
   :mode ("\\.roc\\'" . roc-ts-mode)
   :hook (roc-ts-mode . (lambda ()
-                         (setq-local indent-tabs-mode nil)
-                         (setq-local tab-width 2)
                          (setq-local indent-line-function 'indent-relative-first-indent-point)
                          ;; (electric-indent-mode -1)
                          )))
@@ -152,10 +147,7 @@
 
 (use-package roc-ts-mode
   :straight t
-  :mode ("\\.roc\\'" . roc-ts-mode)
-  :hook (roc-ts-mode . (lambda ()
-                        (setq indent-tabs-mode nil)
-                        (setq tab-width 2))))
+  :mode ("\\.roc\\'" . roc-ts-mode))
 
 (with-eval-after-load 'roc-ts-mode
   (require 'eglot)
