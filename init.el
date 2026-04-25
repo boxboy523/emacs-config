@@ -29,8 +29,8 @@
   (load bootstrap-file nil 'nomessage))
 
 (setq-default indent-tabs-mode nil)
-(setq-default tab-width 2)
-(setq c-basic-offset 2)
+(setq-default tab-width 4)
+(setq c-basic-offset 4)
 (setq split-width-threshold 0)
 (setq split-height-threshold nil)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
