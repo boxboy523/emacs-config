@@ -401,19 +401,14 @@
 ;; -----------------------------------------------------------
 (use-package copilot
   :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el" "dist"))
+  :ensure t
   :hook (prog-mode . copilot-mode)
   :config
   (add-to-list 'copilot-indentation-alist '(prog-mode 2))
   (add-to-list 'copilot-indentation-alist '(org-mode 2))
   (add-to-list 'copilot-indentation-alist '(text-mode 2))
   (add-to-list 'copilot-indentation-alist '(closure-mode 2))
-  (add-to-list 'copilot-indentation-alist '(emacs-lisp-mode 2))
-
-  (let ((server-file (expand-file-name "copilot/dist/agent.js" user-emacs-directory)))
-    (unless (file-exists-p server-file)
-      (message "Copilot server not found. Installing...")
-      (copilot-install-server)))
-  (message "Copilot loaded."))
+  (add-to-list 'copilot-indentation-alist '(emacs-lisp-mode 2)))
 
 (with-eval-after-load 'copilot
   (define-key copilot-mode-map (kbd "<tab>") nil)
